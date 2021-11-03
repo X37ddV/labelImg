@@ -622,40 +622,59 @@ class Canvas(QWidget):
         elif key == Qt.Key_Return and self.can_close_shape():
             self.finalise()
         elif key == Qt.Key_Left and self.selected_shape:
-            self.move_one_pixel('Left')
+            self.move_one_pixel('Left', ev.modifiers())
         elif key == Qt.Key_Right and self.selected_shape:
-            self.move_one_pixel('Right')
+            self.move_one_pixel('Right', ev.modifiers())
         elif key == Qt.Key_Up and self.selected_shape:
-            self.move_one_pixel('Up')
+            self.move_one_pixel('Up', ev.modifiers())
         elif key == Qt.Key_Down and self.selected_shape:
-            self.move_one_pixel('Down')
+            self.move_one_pixel('Down', ev.modifiers())
 
-    def move_one_pixel(self, direction):
+    def move_one_pixel(self, direction, modifiers):
         # print(self.selectedShape.points)
+        isCtrl = modifiers & Qt.ControlModifier
+        isShift = modifiers & Qt.ShiftModifier
+        offset = 20.0 if isCtrl else 1.0
         if direction == 'Left' and not self.move_out_of_bound(QPointF(-1.0, 0)):
             # print("move Left one pixel")
-            self.selected_shape.points[0] += QPointF(-1.0, 0)
-            self.selected_shape.points[1] += QPointF(-1.0, 0)
-            self.selected_shape.points[2] += QPointF(-1.0, 0)
-            self.selected_shape.points[3] += QPointF(-1.0, 0)
+            if isShift:
+                self.selected_shape.points[1] += QPointF(-offset, 0)
+                self.selected_shape.points[2] += QPointF(-offset, 0)
+            else:
+                self.selected_shape.points[0] += QPointF(-offset, 0)
+                self.selected_shape.points[1] += QPointF(-offset, 0)
+                self.selected_shape.points[2] += QPointF(-offset, 0)
+                self.selected_shape.points[3] += QPointF(-offset, 0)
         elif direction == 'Right' and not self.move_out_of_bound(QPointF(1.0, 0)):
             # print("move Right one pixel")
-            self.selected_shape.points[0] += QPointF(1.0, 0)
-            self.selected_shape.points[1] += QPointF(1.0, 0)
-            self.selected_shape.points[2] += QPointF(1.0, 0)
-            self.selected_shape.points[3] += QPointF(1.0, 0)
+            if isShift:
+                self.selected_shape.points[1] += QPointF(offset, 0)
+                self.selected_shape.points[2] += QPointF(offset, 0)
+            else:
+                self.selected_shape.points[0] += QPointF(offset, 0)
+                self.selected_shape.points[1] += QPointF(offset, 0)
+                self.selected_shape.points[2] += QPointF(offset, 0)
+                self.selected_shape.points[3] += QPointF(offset, 0)
         elif direction == 'Up' and not self.move_out_of_bound(QPointF(0, -1.0)):
             # print("move Up one pixel")
-            self.selected_shape.points[0] += QPointF(0, -1.0)
-            self.selected_shape.points[1] += QPointF(0, -1.0)
-            self.selected_shape.points[2] += QPointF(0, -1.0)
-            self.selected_shape.points[3] += QPointF(0, -1.0)
+            if isShift:
+                self.selected_shape.points[2] += QPointF(0, -offset)
+                self.selected_shape.points[3] += QPointF(0, -offset)
+            else:
+                self.selected_shape.points[0] += QPointF(0, -offset)
+                self.selected_shape.points[1] += QPointF(0, -offset)
+                self.selected_shape.points[2] += QPointF(0, -offset)
+                self.selected_shape.points[3] += QPointF(0, -offset)
         elif direction == 'Down' and not self.move_out_of_bound(QPointF(0, 1.0)):
             # print("move Down one pixel")
-            self.selected_shape.points[0] += QPointF(0, 1.0)
-            self.selected_shape.points[1] += QPointF(0, 1.0)
-            self.selected_shape.points[2] += QPointF(0, 1.0)
-            self.selected_shape.points[3] += QPointF(0, 1.0)
+            if isShift:
+                self.selected_shape.points[2] += QPointF(0, offset)
+                self.selected_shape.points[3] += QPointF(0, offset)
+            else:
+                self.selected_shape.points[0] += QPointF(0, offset)
+                self.selected_shape.points[1] += QPointF(0, offset)
+                self.selected_shape.points[2] += QPointF(0, offset)
+                self.selected_shape.points[3] += QPointF(0, offset)
         self.shapeMoved.emit()
         self.repaint()
 

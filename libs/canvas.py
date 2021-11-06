@@ -629,6 +629,62 @@ class Canvas(QWidget):
             self.move_one_pixel('Up', ev.modifiers())
         elif key == Qt.Key_Down and self.selected_shape:
             self.move_one_pixel('Down', ev.modifiers())
+        elif key == Qt.Key_Left and not self.selected_shape:
+            self.move_all_pixel('Left', ev.modifiers())
+        elif key == Qt.Key_Right and not self.selected_shape:
+            self.move_all_pixel('Right', ev.modifiers())
+        elif key == Qt.Key_Up and not self.selected_shape:
+            self.move_all_pixel('Up', ev.modifiers())
+        elif key == Qt.Key_Down and not self.selected_shape:
+            self.move_all_pixel('Down', ev.modifiers())
+
+    def move_all_pixel(self, direction, modifiers):
+        isCtrl = modifiers & Qt.ControlModifier
+        isShift = modifiers & Qt.ShiftModifier
+        if isCtrl:
+            for shape in self.shapes:
+                if direction == 'Left' and not self.move_out_of_bound(QPointF(-1.0, 0), shape):
+                    # print("move Left all pixel")
+                    if isShift:
+                        shape.points[1] += QPointF(-1.0, 0)
+                        shape.points[2] += QPointF(-1.0, 0)
+                    else:
+                        shape.points[0] += QPointF(-1.0, 0)
+                        shape.points[1] += QPointF(-1.0, 0)
+                        shape.points[2] += QPointF(-1.0, 0)
+                        shape.points[3] += QPointF(-1.0, 0)
+                elif direction == 'Right' and not self.move_out_of_bound(QPointF(1.0, 0), shape):
+                    # print("move Right all pixel")
+                    if isShift:
+                        shape.points[1] += QPointF(1.0, 0)
+                        shape.points[2] += QPointF(1.0, 0)
+                    else:
+                        shape.points[0] += QPointF(1.0, 0)
+                        shape.points[1] += QPointF(1.0, 0)
+                        shape.points[2] += QPointF(1.0, 0)
+                        shape.points[3] += QPointF(1.0, 0)
+                elif direction == 'Up' and not self.move_out_of_bound(QPointF(0, -1.0), shape):
+                    # print("move Up all pixel")
+                    if isShift:
+                        shape.points[2] += QPointF(0, -1.0)
+                        shape.points[3] += QPointF(0, -1.0)
+                    else:
+                        shape.points[0] += QPointF(0, -1.0)
+                        shape.points[1] += QPointF(0, -1.0)
+                        shape.points[2] += QPointF(0, -1.0)
+                        shape.points[3] += QPointF(0, -1.0)
+                elif direction == 'Down' and not self.move_out_of_bound(QPointF(0, 1.0), shape):
+                    # print("move Down all pixel")
+                    if isShift:
+                        shape.points[2] += QPointF(0, 1.0)
+                        shape.points[3] += QPointF(0, 1.0)
+                    else:
+                        shape.points[0] += QPointF(0, 1.0)
+                        shape.points[1] += QPointF(0, 1.0)
+                        shape.points[2] += QPointF(0, 1.0)
+                        shape.points[3] += QPointF(0, 1.0)
+            self.shapeMoved.emit()
+            self.repaint()
 
     def move_one_pixel(self, direction, modifiers):
         # print(self.selectedShape.points)
@@ -678,8 +734,9 @@ class Canvas(QWidget):
         self.shapeMoved.emit()
         self.repaint()
 
-    def move_out_of_bound(self, step):
-        points = [p1 + p2 for p1, p2 in zip(self.selected_shape.points, [step] * 4)]
+    def move_out_of_bound(self, step, shape=None):
+        shape = self.selected_shape if shape is None else shape
+        points = [p1 + p2 for p1, p2 in zip(shape.points, [step] * 4)]
         return True in map(self.out_of_pixmap, points)
 
     def set_last_label(self, text, line_color=None, fill_color=None):
